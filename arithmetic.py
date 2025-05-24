@@ -9,7 +9,7 @@ from bitarray import bitarray
 
 
 class ArithmeticCodingEncoder:
-    def __init__(self, input_path, precision=16):
+    def __init__(self, input_path, output_path, precision=16):
         self.input_path = input_path
         self.data = Path(input_path).read_bytes()
         self.num_bytes = len(self.data)
@@ -17,8 +17,8 @@ class ArithmeticCodingEncoder:
         self.probs = {byte: freq / self.num_bytes for byte, freq in self.frequencies.items()}
         self.unique_chars = sorted(self.frequencies.keys())
         self.cum_freq = self.build_cumulative_freq_table()
-        self.output_path = input_path + ".arith"
         self.precision = precision
+        self.output_path = output_path
 
     def encode(self):
         bits = bitarray()
@@ -87,7 +87,7 @@ class ArithmeticCodingEncoder:
 
         compression_ratio = original_size / compressed_size if compressed_size != 0 else 0
 
-        print(f"Compressed '{self.input_path}' ➜ '{self.output_path}'")
+        print(f"Compressed '{self.input_path}' : '{self.output_path}'")
         print(f"Time taken: {end_time - start_time:.4f} seconds")
         print(f"Original size: {original_size} bytes")
         print(f"Compressed size: {compressed_size} bytes")
@@ -112,13 +112,12 @@ class ArithmeticCodingEncoder:
         bits.append(bool(value))
 
 class ArithmeticCodingDecoder:
-    def __init__(self, input_path, precision=16):
+    def __init__(self, input_path,output_path, precision=16):
         self.frequencies, self.num_bytes, self.data = self.read_file(input_path)
         self.unique_chars = sorted(self.frequencies.keys())
         self.cum_freq = self.build_cumulative_freq_table()
-        split_tup = os.path.splitext(input_path)
-        self.output_path = os.path.join("output", split_tup[0])
         self.precision = precision
+        self.output_path = output_path
 
     def decode(self):
         bits = bitarray()
@@ -223,13 +222,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Arithmetic Coding Compression Tool")
     parser.add_argument("mode", choices=["compress", "decompress"], help="Mode of operation")
     parser.add_argument("input", help="Input file path")
+    parser.add_argument("output", help="Output file path (optional)")
     parser.add_argument("--precision", type=int, default=16, help="Compression precision (default: 16)")
 
     args = parser.parse_args()
 
     if args.mode == "compress":
-        encoder = ArithmeticCodingEncoder(args.input, args.precision)
+        encoder = ArithmeticCodingEncoder(args.input, args.output, args.precision)
         encoder.encode()
     else:
-        decoder = ArithmeticCodingDecoder(args.input, args.precision)
+        decoder = ArithmeticCodingDecoder(args.input, args.output, args.precision)
         decoder.decode()
+

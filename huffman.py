@@ -104,7 +104,7 @@ def compress(input_path, output_path):
 
     compression_ratio = original_size / compressed_size if compressed_size != 0 else 0
 
-    print(f"Compressed '{input_path}' ➜ '{output_path}'")
+    print(f"Compressed '{input_path}' : '{output_path}'")
     print(f"Time taken: {end_time - start_time:.4f} seconds")
     print(f"Original size: {original_size} bytes")
     print(f"Compressed size: {compressed_size} bytes")
@@ -132,7 +132,7 @@ def decompress(input_path, output_path):
 
     end_time = time.time()
 
-    print(f"Decompressed '{input_path}' ➜ '{output_path}'")
+    print(f"Decompressed '{input_path}' : '{output_path}'")
     print(f"Time taken: {end_time - start_time:.4f} seconds")
     print(f"Decompressed size: {len(decoded)} bytes")
 
@@ -149,3 +149,6 @@ if __name__ == "__main__":
         compress(args.input, args.output)
     else:
         decompress(args.input, args.output)
+
+    import sys
+    sys.exit(0)  # explicitly exit with success status if no errors occurred
